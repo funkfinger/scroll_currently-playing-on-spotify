@@ -37,9 +37,11 @@ sudo raspi-config
 ```
 sudo apt-get update
 ```
- * install `git` and `pip`
+ * install `git` and `pip` and setup the OS...
 ```
 sudo apt-get install git python-pip
+sudo usermod -a -G spi,gpio pi
+sudo apt-get install build-essential python-dev python-pip libfreetype6-dev libjpeg-dev
 ```
 * clone the repo:
 ```
@@ -49,7 +51,29 @@ cd scroll_currently-playing-on-spotify
 * `pip` install some stuff
 ```
 pip install pylast
-pip install 
+sudo -H pip install --upgrade luma.led_matrix
+```
+copy the config.example.py file to config.py and edit it to have the correct Last.fm info:
+```
+cp config.example.py config.py
+nano config.py
+```
+Save it and if all goes well, the scrolling display should work if you run the script:
+```
+python scroller.py 
+```
+`control-c` to stop the script and add some entries to `crontab`
+```
+crontab -e
+```
+add:
+```
+@reboot python /home/pi/scroll_currently-playing-on-spotify/scroller.py &
+0 */4 * * * /home/pi/scroll_currently-playing-on-spotify/reboot.sh
+```
+also want to implement this at some time - but it's doesn't seem to be working now...
+```
+*/30 * * * * su -s /bin/sh pi -c 'cd /home/pi/scroll_currently-playing-on-spotify && /usr/bin/git pull origin master' >> ~/scrollergitupdate.log
 ```
 
 
